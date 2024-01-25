@@ -19,7 +19,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteract
     locales \
     curl \
     lsb-release \
-    # openssh-server \
     sudo \
     python3 \
     git \
@@ -41,10 +40,6 @@ RUN rm /etc/apt/apt.conf.d/docker-clean
 
 # Add environment variables:
 ENV HOME=/home/$DOCKER_USER
-ENV ENV_DIR=$HOME/env
-ENV PROVISION_DIR=$ENV_DIR/provision
-ENV BIN_DIR=/usr/local/bin
-RUN mkdir -p $PROVISION_DIR
 
 #
 # Adamant add-on portion:
@@ -54,34 +49,19 @@ FROM base as adamant_base
 # Copy files:
 USER $DOCKER_USER
 COPY adamant_example/docker/env/provision/bashrc.sh $HOME/.bashrc
-COPY adamant_example/docker/env/provision/adamant_example.prf $HOME/.unison/adamant_example.prf
-COPY adamant/env/provision/adamant.prf $HOME/.unison/adamant.prf
 
 # Set up symlink to shared folder:
 USER root
-RUN if ! test -d /share; then mkdir /share; fi
-RUN if ! test -d $HOME/share; then ln -sf /share $HOME/share; fi
 
 # Install some base Adamant dependencies:
-#
-# Note: Due to this issue: 
-#
-#     https://bugs.python.org/issue40350
-#     https://github.com/python/cpython/issues/84530
-#
-# We need to use python 3.7 until it is resolved.
-# By default this version of Ubuntu uses 3.8 which
-# exhibits the bug.
 RUN cat /dev/zero | ssh-keygen -q -N "" \
     && echo "vm.swappiness = 0" > /etc/sysctl.conf \
     && sudo ln -sf /usr/lib/x86_64-linux-gnu/libreadline.so.8 /usr/lib/x86_64-linux-gnu/libreadline.so.7 \
     && DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:linuxuprising/libpng12 \
-    && DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:deadsnakes/ppa \
     && apt install --reinstall -y software-properties-common \
     && add-apt-repository ppa:linuxuprising/libpng12 \
-    && add-apt-repository ppa:deadsnakes/ppa \
     && DEBIAN_FRONTEND=noninteractive apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -yq socat graphviz libpng12-0 gawk xxd time psmisc python3.7 python3.7-venv python3.7-dev \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -yq socat graphviz libpng12-0 gawk xxd time psmisc python3-venv python3-dev \
     && DEBIAN_FRONTEND=noninteractive apt install -yq `DEBIAN_FRONTEND=noninteractive apt --assume-no install texlive-full | \
          awk '/The following additional packages will be installed/{f=1;next} /Suggested packages/{f=0} f' | \
          tr ' ' '\n' | \
@@ -98,34 +78,17 @@ RUN cat /dev/zero | ssh-keygen -q -N "" \
 # We need to use python 3.7 until it is resolved.
 # By default this version of Ubuntu uses 3.8 which
 # exhibits the bug.
+ENV ENV_DIR=$HOME/env
+RUN mkdir -p $ENV_DIR
 ENV PYTHON_ENV_DIR=$ENV_DIR/python
 COPY adamant/env/provision $ENV_DIR/requirements
-RUN DEBIAN_FRONTEND=noninteractive sudo apt-get -yq install python3.7 \
-    && python3.7 -m venv $PYTHON_ENV_DIR \
+RUN DEBIAN_FRONTEND=noninteractive sudo apt-get -yq install python3 \
+    && python3 -m venv $PYTHON_ENV_DIR \
     && . $PYTHON_ENV_DIR/bin/activate \
-    && pip3.7 install --upgrade pip \
-    && pip3.7 install wheel \
-    && pip3.7 install -r $ENV_DIR/requirements/requirements1.txt \
-    && pip3.7 install -r $ENV_DIR/requirements/requirements2.txt
-
-# Install unison:
-FROM base AS install_unison
-RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -yq wget ocaml make \
-    && cd $PROVISION_DIR \
-    && git clone https://github.com/bcpierce00/unison \
-    && cd $PROVISION_DIR/unison \
-    && git fetch --tags \
-    && git checkout v2.53.3 \
-    && make
-
-# Install redo:
-FROM base AS install_redo
-ENV STACK_ROOT=/root/.stack
-RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -yq wget \
-    && wget -qO- https://get.haskellstack.org/ | sh \
-    && git config --global core.autocrlf false \
-    && git clone https://github.com/dinkelk/redo.git $PROVISION_DIR/redo \
-    && $PROVISION_DIR/redo/do $PROVISION_DIR/redo/all
+    && pip3 install --upgrade pip \
+    && pip3 install wheel \
+    && pip3 install -r $ENV_DIR/requirements/requirements1.txt \
+    && pip3 install -r $ENV_DIR/requirements/requirements2.txt
 
 # Install elf2uf2
 #
@@ -139,11 +102,11 @@ RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -yq wget \
 #       but leaving this comment here for reference
 #
 FROM base AS install_elf2uf2
-RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -yq make cmake \
-    && mkdir -p $PROVISION_DIR/pico \
-    && cd $PROVISION_DIR/pico \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -yq make cmake \
+    && mkdir -p /root/pico \
+    && cd /root/pico \
     && git clone -b master https://github.com/raspberrypi/pico-sdk.git \
-    && cd $PROVISION_DIR/pico/pico-sdk/tools/elf2uf2 \
+    && cd /root/pico/pico-sdk/tools/elf2uf2 \
     && mkdir build \
     && cd build \
     && cmake .. \
@@ -154,30 +117,25 @@ FROM base AS install_alire
 ENV ALIRE_VERSION="1.2.2"
 ENV ALIRE_FILE=alr-$ALIRE_VERSION-bin-x86_64-linux.zip
 ENV ALIRE_URL=https://github.com/alire-project/alire/releases/download/v$ALIRE_VERSION/$ALIRE_FILE
-RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -yq wget unzip \
-    && mkdir -p $PROVISION_DIR/alire \
-    && cd $PROVISION_DIR/alire \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -yq wget unzip \
+    && mkdir -p /root/alire \
+    && cd /root/alire \
     && wget $ALIRE_URL \
     && rm -rf bin \
-    && unzip $ALIRE_FILE \
-    && cp -r $PROVISION_DIR/alire/bin/alr $BIN_DIR
-
-# Install GNAT tools like gnatpp and gnatmetric:
-FROM install_alire AS install_libadalang
-RUN mkdir -p $PROVISION_DIR/libadalang \
-    && cd $PROVISION_DIR/libadalang \
-    && git clone https://github.com/dinkelk/libadalang_tool_builder.git \
-    && cd libadalang_tool_builder \
-    && alr -n build --release \
-    && mkdir tools \
-    && sh install.sh tools
+    && unzip $ALIRE_FILE
 
 # Install sequence builder:
 FROM base AS install_sequence_builder
-RUN cd $PROVISION_DIR\
-    && DEBIAN_FRONTEND=noninteractive sudo apt-get install -yq wget unzip \
+RUN cd /root \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -yq wget unzip \
     && wget https://github.com/lasp/adamant/releases/download/v0.0.0/adamant_seq.zip \
     && unzip adamant_seq.zip
+
+# Install redo
+FROM ghcr.io/dinkelk/redo:latest as install_redo
+
+# Install libadalang-tools like gnatmetric and gnatpp
+FROM ghcr.io/dinkelk/libadalang_tool_builder:latest as install_libadalang
 
 #
 # This build stage increases the docker image size by several GB. Delaying the
@@ -210,14 +168,14 @@ LABEL org.opencontainers.image.source=https://github.com/lasp/adamant
 LABEL org.opencontainers.image.description="Development environment for the Adamant framework"
 LABEL org.opencontainers.image.licenses=Apache-2.0
 USER root
-COPY --from=install_unison $PROVISION_DIR/unison/src/unison $BIN_DIR
-COPY --from=install_unison $PROVISION_DIR/unison/src/unison-fsmonitor $BIN_DIR
-COPY --from=install_redo $PROVISION_DIR/redo/bin/* $BIN_DIR
-COPY --from=install_alire $PROVISION_DIR/alire/bin/alr $BIN_DIR
-COPY --from=install_elf2uf2 $PROVISION_DIR/pico/pico-sdk/tools/elf2uf2/build/elf2uf2 $BIN_DIR
-COPY --from=install_libadalang $PROVISION_DIR/libadalang/libadalang_tool_builder/tools/* $BIN_DIR
-COPY --from=install_sequence_builder $PROVISION_DIR/adamant_seq/bin/* $BIN_DIR
+ENV BIN_DIR=/usr/local/bin
+COPY --from=install_redo /root/redo/bin/* $BIN_DIR
+COPY --from=install_libadalang /root/libadalang/libadalang_tool_builder/tools/* $BIN_DIR
+COPY --from=install_alire /root/alire/bin/alr $BIN_DIR
+COPY --from=install_elf2uf2 /root/pico/pico-sdk/tools/elf2uf2/build/elf2uf2 $BIN_DIR
+COPY --from=install_sequence_builder /root/adamant_seq/bin/* $BIN_DIR
 # COPY --from=install_ada_deps $HOME/.config $HOME/.config
+RUN mkdir -p $HOME/share
 RUN chown -R $DOCKER_USER:$DOCKER_USER $HOME
 
 # Make sure user is root at end.

@@ -31,13 +31,7 @@ This procedure is used to create a new Docker container that hosts the Adamant b
    $ ./login_container.sh
    ```
 
-The `adamant_example/` and `adamant/` directories in `project/` will be shared with the new Docker container at `~/adamant_example/` and `~/adamant/`.
-
-**Note**: The entire `project/` directory on the host is shared with the Docker container via a bind mount at `/share/`. Compiling
-is slow when done on files in a mounted folder, so internal to the Docker container, [unison](https://github.com/bcpierce00/unison) is 
-used to bi-directional sync `/share/adamant/` and `/share/adamant_example/` to `~/adamant/` and `~/adamant_example/` respectively. This significantly increases the performance
-of the build system. Be aware that there can be some latency or other issues with the internal sync when changing git branches, cleaning, or making
-other changes that modify many files quickly. If you get stuck, try restarting the container via `./stop_container.sh` and `./start_container.sh`.
+The `adamant_example/` and `adamant/` directories in `project/` will be shared with the new Docker container at `~/share/adamant_example/` and `~/share/adamant/`.
 
 ## Starting and Stopping the Container 
 
@@ -64,7 +58,7 @@ To build and run the example project (for Linux) we need to first log in to the 
 From within the container run:
 
   ```
-  user@1234$ cd ~/adamant_example/src/assembly/linux/main
+  user@1234$ cd ~/share/adamant_example/src/assembly/linux/main
   user@1234$ redo run
   ```
 

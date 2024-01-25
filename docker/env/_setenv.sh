@@ -8,7 +8,7 @@ then
   return
 fi
 
-if test -z "$EXAMPLE_DIR" # ie. /home/user/adamant_example
+if test -z "$EXAMPLE_DIR" # ie. /home/user/share/adamant_example
 then
   echo "EXAMPLE_DIR not set in environment." >&2
   exit 1
