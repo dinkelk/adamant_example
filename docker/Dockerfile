@@ -10,7 +10,6 @@
 FROM ubuntu:22.04 AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
-ARG DOCKER_USER=user
 
 # install common dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -yq install \
@@ -29,28 +28,25 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteract
 RUN locale-gen en_US.UTF-8
 
 # setup the user
-RUN if ! getent passwd $DOCKER_USER; then useradd -d /home/$DOCKER_USER -m -s /bin/bash $DOCKER_USER; fi \
+ARG DOCKER_USER=user
+ENV HOME=/home/$DOCKER_USER
+RUN mkdir -p $HOME \
+    && if ! getent passwd $DOCKER_USER; then useradd -d /home/$DOCKER_USER -m -s /bin/bash $DOCKER_USER; fi \
     && echo $DOCKER_USER:$DOCKER_USER | chpasswd \
     && echo "$DOCKER_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && mkdir -p /etc/sudoers.d \
     && echo "$DOCKER_USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/$DOCKER_USER \
-    && chmod 0440 /etc/sudoers.d/$DOCKER_USER
+    && chmod 0440 /etc/sudoers.d/$DOCKER_USER \
+    && cp /root/.bashrc $HOME/.bashrc \
+    && chown -R $DOCKER_USER:$DOCKER_USER $HOME
 
 RUN rm /etc/apt/apt.conf.d/docker-clean
-
-# Add environment variables:
-ENV HOME=/home/$DOCKER_USER
 
 #
 # Adamant add-on portion:
 #
-FROM base as adamant_base
-
-# Copy files:
-USER $DOCKER_USER
-COPY adamant_example/docker/env/provision/bashrc.sh $HOME/.bashrc
-
 # Install some base Adamant dependencies:
+FROM base as adamant_base
 USER root
 RUN cat /dev/zero | ssh-keygen -q -N "" \
     && echo "vm.swappiness = 0" > /etc/sysctl.conf \
@@ -86,7 +82,9 @@ RUN DEBIAN_FRONTEND=noninteractive sudo apt-get -yq install python3 \
     && pip3 install --upgrade pip \
     && pip3 install wheel \
     && pip3 install -r $ENV_DIR/requirements/requirements1.txt \
-    && pip3 install -r $ENV_DIR/requirements/requirements2.txt
+    && pip3 install -r $ENV_DIR/requirements/requirements2.txt \
+    && echo ". $PYTHON_ENV_DIR/bin/activate && cd" >> $HOME/.bashrc \
+    && chown -R $DOCKER_USER:$DOCKER_USER $PYTHON_ENV_DIR
 
 # Install elf2uf2
 #
@@ -173,8 +171,6 @@ COPY --from=install_alire /root/alire/bin/alr $BIN_DIR
 COPY --from=install_elf2uf2 /root/pico/pico-sdk/tools/elf2uf2/build/elf2uf2 $BIN_DIR
 COPY --from=install_sequence_builder /root/adamant_seq/bin/* $BIN_DIR
 # COPY --from=install_ada_deps $HOME/.config $HOME/.config
-RUN mkdir -p $HOME
-RUN chown -R $DOCKER_USER:$DOCKER_USER $HOME
 
 # Make sure user is root at end.
 USER root

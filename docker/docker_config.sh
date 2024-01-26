@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 DOCKER_CONTAINER_NAME="adamant_example_container"
 DOCKER_IMAGE_NAME="ghcr.io/lasp/adamant:example-latest"
