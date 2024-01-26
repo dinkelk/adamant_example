@@ -5,8 +5,8 @@ echo "Setting up environment..."
 
 # Source the setenv script from the adamant repository:
 INSTALL_DIR=$HOME/env
-ADAMANT_DIR=$HOME/share/adamant
-EXAMPLE_DIR=$HOME/share/adamant_example
+ADAMANT_DIR=$HOME/adamant
+EXAMPLE_DIR=$HOME/adamant_example
 export EXAMPLE_DIR
 export INSTALL_DIR
 export ADAMANT_DIR

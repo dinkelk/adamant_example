@@ -116,4 +116,4 @@ if ! shopt -oq posix; then
   fi
 fi
 
-cd ~/share/adamant_example/docker/env && . ./setenv.sh && cd ../../.. && pwd && ls
+cd ~/adamant_example/docker/env && . ./setenv.sh && cd ../../.. && pwd && ls

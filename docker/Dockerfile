@@ -50,10 +50,8 @@ FROM base as adamant_base
 USER $DOCKER_USER
 COPY adamant_example/docker/env/provision/bashrc.sh $HOME/.bashrc
 
-# Set up symlink to shared folder:
-USER root
-
 # Install some base Adamant dependencies:
+USER root
 RUN cat /dev/zero | ssh-keygen -q -N "" \
     && echo "vm.swappiness = 0" > /etc/sysctl.conf \
     && sudo ln -sf /usr/lib/x86_64-linux-gnu/libreadline.so.8 /usr/lib/x86_64-linux-gnu/libreadline.so.7 \
@@ -175,7 +173,7 @@ COPY --from=install_alire /root/alire/bin/alr $BIN_DIR
 COPY --from=install_elf2uf2 /root/pico/pico-sdk/tools/elf2uf2/build/elf2uf2 $BIN_DIR
 COPY --from=install_sequence_builder /root/adamant_seq/bin/* $BIN_DIR
 # COPY --from=install_ada_deps $HOME/.config $HOME/.config
-RUN mkdir -p $HOME/share
+RUN mkdir -p $HOME
 RUN chown -R $DOCKER_USER:$DOCKER_USER $HOME
 
 # Make sure user is root at end.

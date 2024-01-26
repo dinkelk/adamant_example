@@ -31,7 +31,7 @@ This procedure is used to create a new Docker container that hosts the Adamant b
    $ ./login_container.sh
    ```
 
-The `adamant_example/` and `adamant/` directories in `project/` will be shared with the new Docker container at `~/share/adamant_example/` and `~/share/adamant/`.
+The `adamant_example/` and `adamant/` directories in `project/` will be shared with the new Docker container at `~/adamant_example/` and `~/adamant/`.
 
 ## Starting and Stopping the Container 
 
@@ -58,7 +58,7 @@ To build and run the example project (for Linux) we need to first log in to the 
 From within the container run:
 
   ```
-  user@1234$ cd ~/share/adamant_example/src/assembly/linux/main
+  user@1234$ cd ~/adamant_example/src/assembly/linux/main
   user@1234$ redo run
   ```
 
