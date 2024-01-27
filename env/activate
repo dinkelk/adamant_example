@@ -6,7 +6,7 @@ echo "Setting up environment..."
 if test -z "$EXAMPLE_DIR" # ie. /home/user/adamant_example
 then
   # Set the adamant directory based on the location of this file.
-  export EXAMPLE_DIR=`readlink -f "${BASH_SOURCE[0]}" | xargs dirname | xargs dirname | xargs dirname`
+  export EXAMPLE_DIR=`readlink -f "${BASH_SOURCE[0]}" | xargs dirname | xargs dirname`
 fi
 
 if test -z "$ADAMANT_DIR" # ie. /home/user/adamant
