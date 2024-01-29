@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This script sets up the environment for the example project.
-echo "Setting up environment..."
-
 if test -z "$EXAMPLE_DIR" # ie. /home/user/adamant_example
 then
   # Set the adamant directory based on the location of this file.
@@ -20,6 +17,9 @@ if test -n "$EXAMPLE_ENVIRONMENT_SET"
 then
   return
 fi
+
+# This script sets up the environment for the example project.
+echo "Setting up Adamant Example environment."
 
 # Set the path to our Adamant configuration file for example:
 export ADAMANT_CONFIGURATION_YAML=$EXAMPLE_DIR/config/example.configuration.yaml
