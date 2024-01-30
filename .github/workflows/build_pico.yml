@@ -12,7 +12,7 @@ jobs:
     name: build_pico_assembly
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/dinkelk/adamant_example:latest
+      image: ghcr.io/lasp/adamant_example:latest
     steps:
       - run: echo "Starting job triggered by a ${{ github.event_name }} event on a ${{ runner.os }} server hosted by GitHub."
       - run: echo "Checking out ${{ github.repository }} on branch ${{ github.ref }}."
@@ -25,8 +25,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           set-safe-directory: true
-          repository: dinkelk/adamant
-          ref: docker_move
+          repository: lasp/adamant
           path: adamant
       - name: Build the Pico binary
         run: bash adamant_example/env/github_run.sh "redo adamant_example/src/assembly/pico/main/build/bin/Pico/main.uf2"
