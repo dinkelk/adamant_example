@@ -4,7 +4,7 @@
 # For best results use the ./build_image.sh and ./create_container.sh scripts
 # provided in this directory.
 #
-FROM ghcr.io/lasp/adamant:latest as adamant_base
+FROM ghcr.io/dinkelk/adamant:latest as adamant_base
 USER root
 
 # Install elf2uf2
