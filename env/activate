@@ -50,6 +50,11 @@ then
   gprbuild -P $pico_runtime_dir/ravenscar_build.gpr
 fi
 
+# For EMA we use the 16-bit subseconds Sys_Time inside of Adamant instead
+# of the 32-bit subseconds default.
+export REMOVE_BUILD_PATH=$ADAMANT_DIR/src/types/sys_time
+export EXTRA_BUILD_PATH=$ADAMANT_DIR/src/types/sys_time/subseconds_16
+
 # Signify the environment it set up:
 export EXAMPLE_ENVIRONMENT_SET="yes"
 
