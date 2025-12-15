@@ -27,7 +27,7 @@ jobs:
         with:
           set-safe-directory: true
           repository: dinkelk/adamant
-          ref: unconstrained-packed-arrays-og
+          ref: packed-array-unconstrained-update
           path: adamant
       - name: Build the Linux binary
         run: bash adamant_example/env/github_run.sh "redo adamant_example/src/assembly/linux/main/build/bin/Linux/main.elf"

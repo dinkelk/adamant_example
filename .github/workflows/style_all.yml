@@ -27,7 +27,7 @@ jobs:
         with:
           set-safe-directory: true
           repository: dinkelk/adamant
-          ref: unconstrained-packed-arrays-og
+          ref: packed-array-unconstrained-update
           path: adamant
       - name: Check all style
         run: bash adamant_example/env/github_run.sh "redo adamant_example/style_all"

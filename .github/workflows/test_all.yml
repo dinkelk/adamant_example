@@ -26,7 +26,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           set-safe-directory: true
-          repository: lasp/adamant
+          repository: dinkelk/adamant
+          ref: packed-array-unconstrained-update
           path: adamant
       - name: Run all unit tests and coverage
         run: bash adamant_example/env/github_run.sh "redo adamant_example/coverage_all"
