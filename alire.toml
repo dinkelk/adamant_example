@@ -20,13 +20,13 @@ website = "https://github.com/lasp/adamant_example"
 # Depend on forks of the rp2040_hal & pico_bsp that don't conflict with
 # the pico runtimes provided in the gnat_arm_elf crate.
 [[depends-on]]
-rp2040_hal = "^2.3.0"
+rp2040_hal = "^2.6.0"
 [[pins]]
 rp2040_hal = { url='https://github.com/dinkelk/rp2040_hal.git', branch="ravenscar" }
 [configuration.values]
 rp2040_hal.Use_Startup = false
 
 [[depends-on]]
-pico_bsp = "^2.1.0"
+pico_bsp = "^2.2.0"
 [[pins]]
 pico_bsp = { url='https://github.com/dinkelk/pico_bsp.git', branch="ravenscar" }
