@@ -141,7 +141,7 @@ You should see the software respond by printing out `Interrupt received` with a 
 
  ![`Commanding and Telemetry with Hydra`](../../pico/main/img/hydra.jpg "Commanding and Telemetry with Hydra")
 
-*Note that Hydra is not yet publicly available, but will be made so in the future. The instructions below serve as an example of how you could interact with this assembly with any ground system.*
+*Note that Hydra is not yet publicly available, but will be made available in the future. The instructions below serve as an example of how you could interact with this assembly with any ground system.*
 
 To best interact with the Linux assembly, we need to use a ground system interface, such as Hydra. Before running
 Hydra we need to build the Hydra configuration files. This will allow Hydra to decode telemetry from the Linux assembly and properly format
