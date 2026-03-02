@@ -9,6 +9,8 @@ with Interfaces; use Interfaces;
 with Basic_Assertions; use Basic_Assertions;
 with Operands.Assertion; use Operands.Assertion;
 with Packed_U32.Assertion; use Packed_U32.Assertion;
+with Command;
+with Command_Response_Status;
 with AUnit.Assertions; use AUnit.Assertions;
 
 package body Tests.Implementation is
@@ -86,7 +88,7 @@ package body Tests.Implementation is
       Self.Tester.Counter_Value_History.Clear;
       Natural_Assert.Eq (Self.Tester.Set_Count_Command_Received_History.Get_Count, 0);
       Self.Tester.Command_T_Send (Commands.Set_Count ((Value => 10)));
-      Assert (Self.Tester.Check_Count (0), "Count = 1 failed.");
+      Assert (Self.Tester.Check_Count (0), "Count = 0 failed.");
       Go;
       Check_Val (11);
       Natural_Assert.Eq (Self.Tester.Set_Count_Command_Received_History.Get_Count, 1);
@@ -108,10 +110,36 @@ package body Tests.Implementation is
       Self.Tester.Counter_Value_History.Clear;
       Natural_Assert.Eq (Self.Tester.Reset_Count_Command_Received_History.Get_Count, 0);
       Self.Tester.Command_T_Send (Commands.Reset_Count);
-      Assert (Self.Tester.Check_Count (22), "Count = 0 failed.");
+      Assert (Self.Tester.Check_Count (22), "Count = 22 failed.");
       Go;
       Check_Val (1);
       Natural_Assert.Eq (Self.Tester.Reset_Count_Command_Received_History.Get_Count, 1);
    end Test_Commands;
+
+   -- This unit test exercises the invalid command handler
+   overriding procedure Test_Invalid_Command (Self : in out Instance) is
+      Cmd : Command.T;
+      Commands : Counter_Commands.Instance renames Self.Tester.Commands;
+   begin
+      -- Construct a Set_Count command, then corrupt its arg buffer length
+      -- to trigger the Invalid_Command handler.
+      Cmd := Commands.Set_Count ((Value => 42));
+      -- Set arg buffer length to 0, which is invalid for Set_Count (expects 4 bytes):
+      Cmd.Header.Arg_Buffer_Length := 0;
+
+      -- Send the corrupted command and tick to dispatch it:
+      Self.Tester.Command_T_Send (Cmd);
+      Self.Tester.Tick_T_Send ((Time => (1, 1), Count => 1));
+
+      -- Verify that the Invalid_Command_Received event was fired:
+      Natural_Assert.Eq (Self.Tester.Invalid_Command_Received_History.Get_Count, 1);
+
+      -- Verify the command response indicates failure:
+      Natural_Assert.Eq (Self.Tester.Command_Response_T_Recv_Sync_History.Get_Count, 1);
+      Assert (
+         Self.Tester.Command_Response_T_Recv_Sync_History.Get (1).Status = Command_Response_Status.Failure,
+         "Expected command response status to be Failure for invalid command."
+      );
+   end Test_Invalid_Command;
 
 end Tests.Implementation;

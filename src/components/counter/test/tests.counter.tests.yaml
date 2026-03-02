@@ -5,3 +5,5 @@ tests:
     description: This unit test exercises the counter component and makes sure it, well, counts!
   - name: Test_Commands
     description: This unit test tests all the commands for the counter component
+  - name: Test_Invalid_Command
+    description: This unit test exercises the invalid command handler to ensure it fires the appropriate event
