@@ -86,7 +86,7 @@ package body Tests.Implementation is
       Self.Tester.Counter_Value_History.Clear;
       Natural_Assert.Eq (Self.Tester.Set_Count_Command_Received_History.Get_Count, 0);
       Self.Tester.Command_T_Send (Commands.Set_Count ((Value => 10)));
-      Assert (Self.Tester.Check_Count (0), "Count = 1 failed.");
+      Assert (Self.Tester.Check_Count (0), "Count = 0 failed.");
       Go;
       Check_Val (11);
       Natural_Assert.Eq (Self.Tester.Set_Count_Command_Received_History.Get_Count, 1);
@@ -108,7 +108,7 @@ package body Tests.Implementation is
       Self.Tester.Counter_Value_History.Clear;
       Natural_Assert.Eq (Self.Tester.Reset_Count_Command_Received_History.Get_Count, 0);
       Self.Tester.Command_T_Send (Commands.Reset_Count);
-      Assert (Self.Tester.Check_Count (22), "Count = 0 failed.");
+      Assert (Self.Tester.Check_Count (22), "Count = 22 failed.");
       Go;
       Check_Val (1);
       Natural_Assert.Eq (Self.Tester.Reset_Count_Command_Received_History.Get_Count, 1);
