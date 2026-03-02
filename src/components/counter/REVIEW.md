@@ -141,3 +141,11 @@ No test sends `(Unsigned_16'Last, Unsigned_16'Last)` to verify the maximum-sum c
 | 3 | **Medium** | `tests-implementation.adb:Test_Commands` | Assertion error messages are copy-pasted and don't match the checked values (e.g., checks 0, says "Count = 1") |
 | 4 | **Medium** | `counter_action/pico/counter_action.adb` | LED toggle creates implicit state decoupled from counter value; commands can desync LED from count |
 | 5 | **Medium** | `tests-implementation.adb` | `Command_T_Recv_Async_Dropped` path (queue overflow) is never tested |
+
+## Resolution Notes
+
+| # | Issue | Severity | Status | Commit | Notes |
+|---|-------|----------|--------|--------|-------|
+| 1 | Misleading assertion messages | Low | Fixed | 1f99a63 | Corrected test assertion strings |
+| 2 | Count overflow on tick | High | Not Fixed | - | By design for example component |
+| 3 | Set_Count_Add overflow | High | Not Fixed | - | By design for example component |
