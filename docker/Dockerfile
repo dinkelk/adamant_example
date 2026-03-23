@@ -4,7 +4,7 @@
 # For best results use the ./adamant_env.sh script with the `build` and `start` arguments
 # provided in this directory.
 #
-FROM ghcr.io/lasp/adamant:0.1 AS adamant_base
+FROM ghcr.io/lasp/adamant:0.2 AS adamant_base
 USER root
 
 # Install elf2uf2

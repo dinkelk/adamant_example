@@ -34,7 +34,7 @@ jobs:
             -w /workspace \
             -e TMPDIR=/tmp \
             -e ADAMANT_TMP_DIR=/tmp/.adamant \
-            ghcr.io/lasp/adamant_example:0.1 \
+            ghcr.io/lasp/adamant_example:0.2 \
             bash adamant_example/env/github_run.sh "redo adamant_example/coverage_all"
         # NOTE: TMPDIR and ADAMANT_TMP_DIR must be set to the container's native filesystem (/tmp)
         # rather than the volume-mounted workspace. This prevents cross-device I/O errors with the

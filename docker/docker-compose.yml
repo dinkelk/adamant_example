@@ -1,7 +1,7 @@
 name: adamant_example
 services:
     adamant_example:
-        image: ghcr.io/lasp/adamant_example:0.1
+        image: ghcr.io/lasp/adamant_example:0.2
         build:
             context: .
             dockerfile: Dockerfile
