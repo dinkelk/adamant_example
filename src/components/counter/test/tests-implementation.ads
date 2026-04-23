@@ -18,6 +18,8 @@ private
    overriding procedure Test_1 (Self : in out Instance);
    -- This unit test tests all the commands for the counter component
    overriding procedure Test_Commands (Self : in out Instance);
+   -- This unit test exercises the invalid command handler
+   overriding procedure Test_Invalid_Command (Self : in out Instance);
 
    -- Test data and state:
    type Instance is new Tests.Base_Instance with record
