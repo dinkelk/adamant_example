@@ -1,0 +1,29 @@
+with "pico_bsp.gpr";
+
+project pico_test extends all "a_bareboard_development.gpr" is
+
+   -----------------------------------------------
+   -- These lines of code must be included at the
+   -- top of every Adamant based .gpr file. They
+   -- are used to connect the Adamant build system
+   -- to GPRBuild.
+   -----------------------------------------------
+   for Source_Dirs use a_adamant.SOURCE_DIRS;
+   for Excluded_Source_Files use a_adamant.EXCLUDED_SOURCE_FILES;
+   for Object_Dir use a_adamant.OBJECT_DIR;
+   for Exec_Dir use a_adamant.EXEC_DIR;
+
+   for Target use "arm-eabi";
+   for Runtime ("Ada") use "embedded-rpi-pico";
+   for Languages use ("Ada", "C", "ASM_CPP");
+   for Main use ("test_pico.adb");
+
+   package Binder is
+      for Switches ("Ada") use a_bareboard_base.Binder'Switches ("Ada") & ("-E");
+   end Binder;
+
+   package Linker is
+      for Switches ("Ada") use a_bareboard_base.Linker'Switches ("Ada");
+   end Linker;
+
+end pico_test;
